@@ -7,6 +7,8 @@
     }
   ],
   "env": {
+    "BLOB_READ_WRITE_TOKEN": "vercel_blob_rw_OL2sypDTpMbr4cGL_8cWggqU0bB6UxNjhgRDy7ZJoWRmnLp",
+    "POSTGRES_URL": "postgres://neondb_owner:npg_7X9kVOHfpmvU@ep-tiny-resonance-a52pdny1-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require",
     "NEXT_PUBLIC_SERVER_URL": "https://nuolat.vercel.app",
     "PAYLOAD_SECRET": "0082fd62e988c72f6d462513",
     "VERCEL_PROJECT_PRODUCTION_URL": "nuolat.vercel.app"
