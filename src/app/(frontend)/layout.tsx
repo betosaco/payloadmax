@@ -15,6 +15,7 @@ import { draftMode } from 'next/headers'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
+import { LivePreviewConfig } from '@/components/LivePreviewConfig'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
@@ -28,15 +29,31 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <Providers>
-          <AdminBar
-            adminBarProps={{
-              preview: isEnabled,
-            }}
-          />
+          {isEnabled && (
+            <LivePreviewConfig>
+              <AdminBar
+                adminBarProps={{
+                  preview: isEnabled,
+                }}
+              />
+              <Header />
+              {children}
+              <Footer />
+            </LivePreviewConfig>
+          )}
 
-          <Header />
-          {children}
-          <Footer />
+          {!isEnabled && (
+            <>
+              <AdminBar
+                adminBarProps={{
+                  preview: isEnabled,
+                }}
+              />
+              <Header />
+              {children}
+              <Footer />
+            </>
+          )}
         </Providers>
       </body>
     </html>

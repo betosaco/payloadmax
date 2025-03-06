@@ -11,7 +11,9 @@
     "POSTGRES_URL": "postgres://neondb_owner:npg_7X9kVOHfpmvU@ep-tiny-resonance-a52pdny1-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require",
     "NEXT_PUBLIC_SERVER_URL": "https://nuolat.vercel.app",
     "PAYLOAD_SECRET": "0082fd62e988c72f6d462513",
-    "VERCEL_PROJECT_PRODUCTION_URL": "nuolat.vercel.app"
+    "VERCEL_PROJECT_PRODUCTION_URL": "nuolat.vercel.app",
+    "CRON_SECRET": "1Ewe9920.",
+    "PREVIEW_SECRET": "1Ewe9920."
   },
   "buildCommand": "pnpm run ci"
 }
