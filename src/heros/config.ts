@@ -72,6 +72,7 @@ export const hero: Field = {
       type: 'checkbox',
       label: 'Mostrar formulario al lado derecho',
       admin: {
+        condition: (_, { type } = {}) => ['highImpact'].includes(type),
         description:
           'Selecciona esta opción para mostrar un formulario en el lado derecho del hero',
       },
