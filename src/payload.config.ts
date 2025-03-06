@@ -72,7 +72,10 @@ export default buildConfig({
     ...plugins,
     vercelBlobStorage({
       collections: {
-        media: true,
+        [Media.slug]: {
+          // Enable the storage adapter for the media collection
+          adapter: true,
+        },
       },
       token: process.env.BLOB_READ_WRITE_TOKEN || '',
     }),
