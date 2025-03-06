@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_SERVER_URL": "https://nuolat.vercel.app",
+    "PAYLOAD_SECRET": "0082fd62e988c72f6d462513",
+    "VERCEL_PROJECT_PRODUCTION_URL": "nuolat.vercel.app"
+  },
+  "buildCommand": "pnpm run ci"
+}
