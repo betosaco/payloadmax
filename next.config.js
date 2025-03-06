@@ -9,6 +9,7 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    domains: ['localhost', 'nuolat.vercel.app', 'xhgnebxb2aexidynkkdm.blob.vercel-storage.com'],
     remotePatterns: [
       ...[NEXT_PUBLIC_SERVER_URL].map((item) => {
         const url = new URL(item)
@@ -18,6 +19,10 @@ const nextConfig = {
           protocol: url.protocol.replace(':', ''),
         }
       }),
+      {
+        hostname: '*.blob.vercel-storage.com',
+        protocol: 'https',
+      },
     ],
   },
   reactStrictMode: true,
