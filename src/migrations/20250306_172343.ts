@@ -1,6 +1,63 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-vercel-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+  // Try creating each enum but ignore errors if they already exist
+  try {
+    await db.execute(sql`DO $$
+    BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_pages_hero_links_link_type') THEN
+        CREATE TYPE "public"."enum_pages_hero_links_link_type" AS ENUM('reference', 'custom');
+      END IF;
+
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_pages_hero_links_link_appearance') THEN
+        CREATE TYPE "public"."enum_pages_hero_links_link_appearance" AS ENUM('default', 'outline');
+      END IF;
+
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_pages_blocks_cta_links_link_type') THEN
+        CREATE TYPE "public"."enum_pages_blocks_cta_links_link_type" AS ENUM('reference', 'custom');
+      END IF;
+
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_pages_blocks_cta_links_link_appearance') THEN
+        CREATE TYPE "public"."enum_pages_blocks_cta_links_link_appearance" AS ENUM('default', 'outline');
+      END IF;
+
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_pages_blocks_content_columns_size') THEN
+        CREATE TYPE "public"."enum_pages_blocks_content_columns_size" AS ENUM('oneThird', 'half', 'twoThirds', 'full');
+      END IF;
+
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_pages_blocks_content_columns_link_type') THEN
+        CREATE TYPE "public"."enum_pages_blocks_content_columns_link_type" AS ENUM('reference', 'custom');
+      END IF;
+
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_pages_blocks_content_columns_link_appearance') THEN
+        CREATE TYPE "public"."enum_pages_blocks_content_columns_link_appearance" AS ENUM('default', 'outline');
+      END IF;
+
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_pages_blocks_archive_populate_by') THEN
+        CREATE TYPE "public"."enum_pages_blocks_archive_populate_by" AS ENUM('collection', 'selection');
+      END IF;
+
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_pages_blocks_archive_relation_to') THEN
+        CREATE TYPE "public"."enum_pages_blocks_archive_relation_to" AS ENUM('posts');
+      END IF;
+
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_pages_hero_type') THEN
+        CREATE TYPE "public"."enum_pages_hero_type" AS ENUM('none', 'highImpact', 'mediumImpact', 'lowImpact');
+      END IF;
+
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_pages_status') THEN
+        CREATE TYPE "public"."enum_pages_status" AS ENUM('draft', 'published');
+      END IF;
+
+      -- Continue with other enum types...
+    END
+    $$;`)
+  } catch (err) {
+    console.log('Some enums may already exist, continuing with migration:', err)
+  }
+
+  // Continue with the rest of the migration (tables creation)
+  // Use IF NOT EXISTS for all table creations
   await db.execute(sql`
    CREATE TYPE "public"."enum_pages_hero_links_link_type" AS ENUM('reference', 'custom');
   CREATE TYPE "public"."enum_pages_hero_links_link_appearance" AS ENUM('default', 'outline');
