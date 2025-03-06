@@ -67,6 +67,25 @@ export const hero: Field = {
       relationTo: 'media',
       required: true,
     },
+    {
+      name: 'showForm',
+      type: 'checkbox',
+      label: 'Mostrar formulario al lado derecho',
+      admin: {
+        description:
+          'Selecciona esta opción para mostrar un formulario en el lado derecho del hero',
+      },
+    },
+    {
+      name: 'form',
+      type: 'relationship',
+      relationTo: 'forms',
+      admin: {
+        condition: (_, { showForm } = {}) => Boolean(showForm),
+        description: 'Selecciona el formulario que se mostrará en el lado derecho del hero',
+      },
+      required: false,
+    },
   ],
   label: false,
 }
