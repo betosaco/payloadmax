@@ -67,8 +67,10 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
           )}
         </div>
         {showForm && form && (
-          <div className="w-full lg:w-[40%] min-w-[320px] mt-12 lg:mt-0">
-            <FormRenderer formData={form} />
+          <div className="w-full lg:w-[40%] min-w-[320px] lg:mt-0">
+            <div className="p-4 lg:p-6 lg:mt-24">
+              <FormRenderer formData={form} />
+            </div>
           </div>
         )}
       </div>
