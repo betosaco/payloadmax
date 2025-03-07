@@ -56,20 +56,33 @@ export const FormBlock: Block = {
           type: 'array',
           label: 'Form Steps',
           admin: {
-            condition: (_, { multiStep }) => Boolean(multiStep?.enabled),
+            condition: (_, siblingData) => {
+              try {
+                // Verificación segura del valor enabled
+                return siblingData && (siblingData as any).enabled === true
+              } catch (err) {
+                console.warn('Error checking multiStep condition:', err)
+                return false
+              }
+            },
             description:
               'Define the steps for your multi-step form. Each step should contain a title and list of fields to display.',
           },
           validate: (value) => {
-            // Only validate if there is a value to validate
-            if (!value) return true
+            try {
+              // Solo validar si hay un valor para validar
+              if (!value) return true
 
-            if (!Array.isArray(value) || value.length === 0) {
-              return 'At least one step is required for a multi-step form'
+              if (!Array.isArray(value) || value.length === 0) {
+                return 'At least one step is required for a multi-step form'
+              }
+
+              // Further validation could be added here to verify field names exist in the form
+              return true
+            } catch (err) {
+              console.warn('Error validating steps:', err)
+              return true // Permitir en caso de error para evitar bloqueos
             }
-
-            // Further validation could be added here to verify field names exist in the form
-            return true
           },
           fields: [
             {

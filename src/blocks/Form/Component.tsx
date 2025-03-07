@@ -2,7 +2,7 @@
 import type { FormFieldBlock, Form as FormType } from '@payloadcms/plugin-form-builder/types'
 
 import { useRouter } from 'next/navigation'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import RichText from '@/components/RichText'
 import { Button } from '@/components/ui/button'
@@ -58,32 +58,64 @@ export const FormBlock: React.FC<
   const router = useRouter()
 
   // Check if the form is multi-step and has valid steps
-  const isMultiStep = multiStep?.enabled && multiStep.steps && multiStep.steps.length > 0
+  // Usamos verificaciones de seguridad adicionales para manejar posibles errores de base de datos
+  const isMultiStepEnabled = multiStep?.enabled === true
+  const hasValidSteps = Array.isArray(multiStep?.steps) && multiStep.steps.length > 0
+  const isMultiStep = isMultiStepEnabled && hasValidSteps
+
+  // Si no hay pasos válidos, tratamos como un formulario normal
   const steps = isMultiStep ? multiStep.steps : null
   const totalSteps = steps?.length || 1
 
+  // Si estamos en paso mayor al número de pasos, restablecemos al último paso
+  // Esto previene errores si la configuración cambia
+  useEffect(() => {
+    if (steps && currentStep >= steps.length) {
+      setCurrentStep(Math.max(0, steps.length - 1))
+    }
+  }, [steps, currentStep])
+
   // Get fields for the current step if using multi-step, otherwise use all fields
   const getFieldsForCurrentStep = useCallback(() => {
-    if (!isMultiStep || !steps) {
-      return formFromProps.fields
+    // Si no es multi-step o hay algún problema con los pasos, devolvemos todos los campos
+    if (!isMultiStep || !steps || !Array.isArray(formFromProps.fields)) {
+      return formFromProps.fields || []
     }
 
-    const currentStepData = steps[currentStep]
-    if (!currentStepData || !currentStepData.fields) {
-      return formFromProps.fields
+    // Protección contra índices fuera de rango
+    const stepIndex = Math.min(currentStep, steps.length - 1)
+    const currentStepData = steps[stepIndex]
+
+    if (!currentStepData || !Array.isArray(currentStepData.fields)) {
+      return formFromProps.fields || []
     }
 
-    // Get field names from the current step
-    const fieldNames = currentStepData.fields.map((field) => field.fieldName)
+    try {
+      // Get field names from the current step
+      const fieldNames = currentStepData.fields.map((field) => field.fieldName).filter(Boolean)
 
-    // Filter form fields to only include those in the current step
-    return (
-      formFromProps.fields?.filter((field) => {
-        // Para manejar diferentes tipos de campos, verificamos si tienen una propiedad 'name' o 'blockName'
-        const fieldIdentifier = (field as any).name || (field as any).blockName
-        return fieldIdentifier && fieldNames.includes(fieldIdentifier)
-      }) || []
-    )
+      // Si no hay nombres de campo válidos, mostramos todos los campos
+      if (fieldNames.length === 0) {
+        return formFromProps.fields
+      }
+
+      // Filter form fields to only include those in the current step
+      return (
+        formFromProps.fields.filter((field) => {
+          try {
+            // Para manejar diferentes tipos de campos, verificamos si tienen una propiedad 'name' o 'blockName'
+            const fieldIdentifier = (field as any).name || (field as any).blockName
+            return fieldIdentifier && fieldNames.includes(fieldIdentifier)
+          } catch (err) {
+            console.warn('Error al filtrar campo:', err)
+            return true // Incluir el campo si hay un error al procesarlo
+          }
+        }) || []
+      )
+    } catch (err) {
+      console.warn('Error en getFieldsForCurrentStep:', err)
+      return formFromProps.fields || [] // En caso de error, mostrar todos los campos
+    }
   }, [formFromProps.fields, isMultiStep, steps, currentStep])
 
   const onSubmit = useCallback(
