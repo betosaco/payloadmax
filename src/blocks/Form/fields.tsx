@@ -7,15 +7,19 @@ import { Select } from './Select'
 import { State } from './State'
 import { Text } from './Text'
 import { Textarea } from './Textarea'
+import { PartnersStep } from './PartnerFields'
+import { CEOSelection } from './CEOSelection'
 
 export const fields = {
-  checkbox: Checkbox,
-  country: Country,
-  email: Email,
-  message: Message,
-  number: Number,
-  select: Select,
-  state: State,
   text: Text,
   textarea: Textarea,
+  select: Select,
+  email: Email,
+  state: State,
+  country: Country,
+  checkbox: Checkbox,
+  number: Number,
+  message: Message,
+  partnersStep: PartnersStep,
+  ceoSelection: CEOSelection,
 }

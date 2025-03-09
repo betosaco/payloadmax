@@ -112,40 +112,18 @@ export const FormBlock: Block = {
           name: 'enabled',
           type: 'checkbox',
           label: 'Enable Multi-Step Form',
-          defaultValue: false,
         },
         {
           name: 'steps',
           type: 'array',
-          label: 'Form Steps',
+          label: 'Steps',
           admin: {
-            condition: (_, siblingData) => {
-              try {
-                // Verificación segura del valor enabled
-                return siblingData && (siblingData as any).enabled === true
-              } catch (err) {
-                console.warn('Error checking multiStep condition:', err)
-                return false
-              }
-            },
-            description:
-              'Define the steps for your multi-step form. Each step should contain a title and list of fields to display.',
+            condition: (data: any, siblingData: { enabled?: boolean }) =>
+              Boolean(siblingData?.enabled),
           },
-          validate: (value) => {
-            try {
-              // Solo validar si hay un valor para validar
-              if (!value) return true
-
-              if (!Array.isArray(value) || value.length === 0) {
-                return 'At least one step is required for a multi-step form'
-              }
-
-              // Further validation could be added here to verify field names exist in the form
-              return true
-            } catch (err) {
-              console.warn('Error validating steps:', err)
-              return true // Permitir en caso de error para evitar bloqueos
-            }
+          labels: {
+            singular: 'Step',
+            plural: 'Steps',
           },
           fields: [
             {
@@ -155,11 +133,19 @@ export const FormBlock: Block = {
               required: true,
             },
             {
+              name: 'isPartnersStep',
+              type: 'checkbox',
+              label: 'Is Partners Step (Enables dynamic partner fields)',
+            },
+            {
               name: 'fields',
               type: 'array',
-              label: 'Fields to Display',
+              label: 'Fields to Show in this Step',
+              admin: {
+                condition: (data: any, siblingData: { isPartnersStep?: boolean }) =>
+                  siblingData?.isPartnersStep !== true,
+              },
               minRows: 1,
-              required: true,
               labels: {
                 singular: 'Field',
                 plural: 'Fields',
@@ -170,9 +156,6 @@ export const FormBlock: Block = {
                   type: 'text',
                   label: 'Field Name',
                   required: true,
-                  admin: {
-                    description: 'Enter the name of the field as defined in your form',
-                  },
                 },
               ],
             },

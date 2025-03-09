@@ -1,5 +1,6 @@
 'use client'
 import type { FormFieldBlock, Form as FormType } from '@payloadcms/plugin-form-builder/types'
+import type { FieldErrorsImpl, UseFormRegister, Control } from 'react-hook-form'
 
 import { useRouter } from 'next/navigation'
 import React, { useCallback, useState, useEffect } from 'react'
@@ -10,6 +11,8 @@ import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical
 
 import { fields } from './fields'
 import { getClientSideURL } from '@/utilities/getURL'
+import { PartnersStep } from './PartnerFields'
+import { CEOSelection } from './CEOSelection'
 
 export type FormBlockType = {
   blockName?: string
@@ -41,6 +44,58 @@ export type FormBlockType = {
       }[]
     }[]
   }
+}
+
+// Definir tipos específicos para propósitos de tipado
+type FieldComponent = React.ComponentType<{
+  form: FormType
+  control: Control<FormFieldBlock[]>
+  errors: Partial<FieldErrorsImpl<FormFieldBlock[]>>
+  register: UseFormRegister<FormFieldBlock[]>
+  [key: string]: unknown
+}>
+
+type FieldsMap = Record<string, FieldComponent>
+
+type StepData = {
+  title: string
+  fields?: { fieldName: string }[]
+  isPartnersStep?: boolean
+  isCEOStep?: boolean
+}
+
+// Simplificar la función isPartnersStep con tipos específicos
+function isPartnersStep(stepData: StepData | undefined): boolean {
+  if (!stepData) return false
+
+  // Verificar primero si el paso tiene la propiedad isPartnersStep explícita
+  if (stepData.isPartnersStep === true) return true
+
+  // Si no tiene la propiedad, verificar los campos
+  if (!Array.isArray(stepData.fields)) return false
+
+  return stepData.fields.some(
+    (field) =>
+      field.fieldName === 'numberOfPartners' ||
+      (field.fieldName && field.fieldName.startsWith('partner')),
+  )
+}
+
+// Función para detectar el paso de selección de CEO
+function isCEOStep(stepData: StepData | undefined): boolean {
+  if (!stepData) return false
+
+  // Verificar primero si el paso tiene la propiedad isCEOStep explícita
+  if (stepData.isCEOStep === true) return true
+
+  // Si no tiene la propiedad, verificar los campos
+  if (!Array.isArray(stepData.fields)) return false
+
+  return stepData.fields.some(
+    (field) =>
+      field.fieldName === 'ceoSelection' ||
+      (field.fieldName && field.fieldName.startsWith('newCEO')),
+  )
 }
 
 export const FormBlock: React.FC<
@@ -121,7 +176,13 @@ export const FormBlock: React.FC<
         formFromProps.fields.filter((field) => {
           try {
             // Para manejar diferentes tipos de campos, verificamos si tienen una propiedad 'name' o 'blockName'
-            const fieldIdentifier = (field as any).name || (field as any).blockName
+            const typedField = field as FormFieldBlock
+            const fieldIdentifier =
+              'name' in typedField
+                ? (typedField.name as string)
+                : 'blockName' in typedField
+                  ? (typedField.blockName as string)
+                  : undefined
             return fieldIdentifier && fieldNames.includes(fieldIdentifier)
           } catch (err) {
             console.warn('Error al filtrar campo:', err)
@@ -134,6 +195,9 @@ export const FormBlock: React.FC<
       return formFromProps.fields || [] // En caso de error, mostrar todos los campos
     }
   }, [formFromProps.fields, isMultiStep, steps, currentStep])
+
+  // Obtener los campos para el paso actual
+  const currentStepFields = getFieldsForCurrentStep()
 
   const onSubmit = useCallback(
     (data: FormFieldBlock[]) => {
@@ -272,27 +336,80 @@ export const FormBlock: React.FC<
               )}
 
               <div className="mb-4 last:mb-0">
-                {formFromProps &&
-                  formFromProps.fields &&
-                  getFieldsForCurrentStep()?.map((field, index) => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const Field: React.FC<any> = fields?.[field.blockType as keyof typeof fields]
-                    if (Field) {
-                      return (
-                        <div className="mb-6 last:mb-0" key={index}>
-                          <Field
-                            form={formFromProps}
-                            {...field}
-                            {...formMethods}
-                            control={control}
-                            errors={errors}
-                            register={register}
-                          />
-                        </div>
-                      )
-                    }
-                    return null
-                  })}
+                {isMultiStep && currentStep < totalSteps && steps && (
+                  <div className="form-steps-indicator mb-6">
+                    <p className="text-sm text-gray-500 mb-2">
+                      Paso {currentStep + 1} de {totalSteps} -{' '}
+                      {steps[currentStep]?.title || 'Paso sin título'}
+                    </p>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div
+                        className="bg-blue-600 h-2.5 rounded-full"
+                        style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Verificar si estamos en el paso de socios */}
+                {isMultiStep &&
+                currentStepFields &&
+                steps &&
+                currentStep < steps.length &&
+                steps[currentStep] ? (
+                  // Verificar si es el paso de socios o CEO
+                  isPartnersStep(steps[currentStep]) ? (
+                    <PartnersStep />
+                  ) : isCEOStep(steps[currentStep]) ? (
+                    <CEOSelection />
+                  ) : (
+                    // Renderizado de campos normales
+                    <div className="form-fields">
+                      {currentStepFields.map((field: FormFieldBlock, index: number) => {
+                        // Acceso seguro simplificado
+                        const blockType = field?.blockType as string
+                        const fieldsMap = fields as unknown as FieldsMap
+                        if (!blockType || !fieldsMap[blockType]) return null
+
+                        const FieldComponent = fieldsMap[blockType]
+                        return (
+                          <React.Fragment key={index}>
+                            <FieldComponent
+                              form={formFromProps}
+                              {...field}
+                              control={control}
+                              errors={errors}
+                              register={register}
+                            />
+                          </React.Fragment>
+                        )
+                      })}
+                    </div>
+                  )
+                ) : (
+                  // Renderizado para formulario sin multi-paso
+                  <div className="form-fields">
+                    {currentStepFields &&
+                      currentStepFields.map((field: FormFieldBlock, index: number) => {
+                        const blockType = field?.blockType as string
+                        const fieldsMap = fields as unknown as FieldsMap
+                        if (!blockType || !fieldsMap[blockType]) return null
+
+                        const FieldComponent = fieldsMap[blockType]
+                        return (
+                          <React.Fragment key={index}>
+                            <FieldComponent
+                              form={formFromProps}
+                              {...field}
+                              control={control}
+                              errors={errors}
+                              register={register}
+                            />
+                          </React.Fragment>
+                        )
+                      })}
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-between">

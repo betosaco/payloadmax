@@ -2,6 +2,8 @@ import { Banner } from '@payloadcms/ui/elements/Banner'
 import React from 'react'
 
 import { SeedButton } from './SeedButton'
+import { BusinessFormSeedButton } from './BusinessFormSeedButton'
+import { OnboardingSeedButton } from './OnboardingSeedButton'
 import './index.scss'
 
 const baseClass = 'before-dashboard'
@@ -12,7 +14,20 @@ const BeforeDashboard: React.FC = () => {
       <Banner className={`${baseClass}__banner`} type="success">
         <h4>Welcome to your dashboard!</h4>
       </Banner>
-      Here&apos;s what to do next:
+      <div style={{ marginBottom: '20px' }}>
+        <h5>Funcionalidades Especiales</h5>
+        <ul>
+          <li style={{ marginBottom: '10px' }}>
+            <BusinessFormSeedButton />
+            <span> - Crea solamente el formulario multi-paso para registro de empresas</span>
+          </li>
+          <li style={{ marginBottom: '10px' }}>
+            <OnboardingSeedButton />
+            <span> - Crea una página de onboarding con el formulario de registro y un hero</span>
+          </li>
+        </ul>
+      </div>
+      <h5>Instrucciones generales:</h5>
       <ul className={`${baseClass}__instructions`}>
         <li>
           <SeedButton />

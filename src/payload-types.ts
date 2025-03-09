@@ -771,19 +771,16 @@ export interface FormBlock {
     | null;
   multiStep?: {
     enabled?: boolean | null;
-    /**
-     * Define the steps for your multi-step form. Each step should contain a title and list of fields to display.
-     */
     steps?:
       | {
           title: string;
-          fields: {
-            /**
-             * Enter the name of the field as defined in your form
-             */
-            fieldName: string;
-            id?: string | null;
-          }[];
+          isPartnersStep?: boolean | null;
+          fields?:
+            | {
+                fieldName: string;
+                id?: string | null;
+              }[]
+            | null;
           id?: string | null;
         }[]
       | null;
@@ -1190,6 +1187,7 @@ export interface FormBlockSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
+              isPartnersStep?: T;
               fields?:
                 | T
                 | {
