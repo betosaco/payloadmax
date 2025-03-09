@@ -197,6 +197,26 @@ export interface Page {
      * Selecciona el formulario que se mostrará en el lado derecho del hero
      */
     form?: (number | null) | Form;
+    /**
+     * Selecciona el color de fondo para el formulario
+     */
+    formBackgroundColor?:
+      | (
+          | 'transparent'
+          | 'white'
+          | 'gray-50'
+          | 'gray-100'
+          | 'cream'
+          | 'beige'
+          | 'blue-50'
+          | 'blue-100'
+          | 'green-50'
+          | 'green-100'
+          | 'pink-50'
+          | 'purple-50'
+          | 'yellow-50'
+        )
+      | null;
   };
   layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
   meta?: {
@@ -1055,6 +1075,7 @@ export interface PagesSelect<T extends boolean = true> {
         media?: T;
         showForm?: T;
         form?: T;
+        formBackgroundColor?: T;
       };
   layout?:
     | T

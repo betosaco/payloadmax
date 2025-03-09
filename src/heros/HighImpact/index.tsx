@@ -11,16 +11,40 @@ import RichText from '@/components/RichText'
 import { FormBlock } from '@/blocks/Form/Component'
 
 // Custom component to handle form rendering
-const FormRenderer: React.FC<{ formData: PayloadForm | number | null | undefined }> = ({
-  formData,
-}) => {
+const FormRenderer: React.FC<{
+  formData: PayloadForm | number | null | undefined
+  backgroundColor?:
+    | 'transparent'
+    | 'white'
+    | 'gray-50'
+    | 'gray-100'
+    | 'cream'
+    | 'beige'
+    | 'blue-50'
+    | 'blue-100'
+    | 'green-50'
+    | 'green-100'
+    | 'pink-50'
+    | 'purple-50'
+    | 'yellow-50'
+}> = ({ formData, backgroundColor = 'transparent' }) => {
   // Skip rendering if form is just an ID
   if (typeof formData === 'number' || !formData) {
     return null
   }
 
+  // Para el fondo transparente en el hero, queremos texto claro ya que el fondo del hero es oscuro
+  const textColorClass = backgroundColor === 'transparent' ? 'text-white' : ''
+
   // Use type assertion to satisfy the compiler
-  return <FormBlock form={formData as unknown as PluginForm} enableIntro={false} />
+  return (
+    <FormBlock
+      form={formData as unknown as PluginForm}
+      enableIntro={false}
+      backgroundColor={backgroundColor}
+      className={textColorClass}
+    />
+  )
 }
 
 export const HighImpactHero: React.FC<Page['hero']> = ({
@@ -29,6 +53,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   richText,
   showForm,
   form,
+  formBackgroundColor = 'transparent',
 }) => {
   const { setHeaderTheme } = useHeaderTheme()
 
@@ -69,7 +94,10 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
         {showForm && form && (
           <div className="w-full lg:w-[40%] min-w-[320px] lg:mt-0">
             <div className="p-4 lg:p-6 lg:mt-24">
-              <FormRenderer formData={form} />
+              <FormRenderer
+                formData={form}
+                backgroundColor={formBackgroundColor ?? 'transparent'}
+              />
             </div>
           </div>
         )}

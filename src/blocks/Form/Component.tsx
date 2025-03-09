@@ -31,6 +31,7 @@ export type FormBlockType = {
     | 'pink-50'
     | 'purple-50'
     | 'yellow-50'
+  className?: string
   multiStep?: {
     enabled: boolean
     steps?: {
@@ -54,6 +55,7 @@ export const FormBlock: React.FC<
     introContent,
     multiStep,
     backgroundColor = 'white',
+    className,
   } = props
 
   const formMethods = useForm({
@@ -222,31 +224,31 @@ export const FormBlock: React.FC<
           backgroundColor === 'transparent'
             ? 'bg-transparent'
             : backgroundColor === 'white'
-              ? 'bg-white'
+              ? 'bg-white text-gray-900 dark:text-gray-900'
               : backgroundColor === 'gray-50'
-                ? 'bg-gray-50'
+                ? 'bg-gray-50 text-gray-900 dark:text-gray-900'
                 : backgroundColor === 'gray-100'
-                  ? 'bg-gray-100'
+                  ? 'bg-gray-100 text-gray-900 dark:text-gray-900'
                   : backgroundColor === 'cream'
-                    ? 'bg-amber-50'
+                    ? 'bg-amber-50 text-gray-900 dark:text-gray-900'
                     : backgroundColor === 'beige'
-                      ? 'bg-amber-100'
+                      ? 'bg-amber-100 text-gray-900 dark:text-gray-900'
                       : backgroundColor === 'blue-50'
-                        ? 'bg-blue-50'
+                        ? 'bg-blue-50 text-gray-900 dark:text-gray-900'
                         : backgroundColor === 'blue-100'
-                          ? 'bg-blue-100'
+                          ? 'bg-blue-100 text-gray-900 dark:text-gray-900'
                           : backgroundColor === 'green-50'
-                            ? 'bg-green-50'
+                            ? 'bg-green-50 text-gray-900 dark:text-gray-900'
                             : backgroundColor === 'green-100'
-                              ? 'bg-green-100'
+                              ? 'bg-green-100 text-gray-900 dark:text-gray-900'
                               : backgroundColor === 'pink-50'
-                                ? 'bg-pink-50'
+                                ? 'bg-pink-50 text-gray-900 dark:text-gray-900'
                                 : backgroundColor === 'purple-50'
-                                  ? 'bg-purple-50'
+                                  ? 'bg-purple-50 text-gray-900 dark:text-gray-900'
                                   : backgroundColor === 'yellow-50'
-                                    ? 'bg-yellow-50'
-                                    : 'bg-white'
-        }`}
+                                    ? 'bg-yellow-50 text-gray-900 dark:text-gray-900'
+                                    : 'bg-white text-gray-900 dark:text-gray-900'
+        } ${className || ''}`}
       >
         <FormProvider {...formMethods}>
           {!isLoading && hasSubmitted && confirmationType === 'message' && (
