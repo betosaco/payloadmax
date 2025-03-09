@@ -79,8 +79,17 @@ export const CEOSelection: React.FC = () => {
         'newCEOEmail',
         'newCEOPhone',
       ])
+
+      // Establecer valores por defecto para evitar campos nulos
+      setValue('newCEOFirstName', '')
+      setValue('newCEOLastName', '')
+      setValue('newCEONationality', 'peruano')
+      setValue('newCEODocumentType', 'dni')
+      setValue('newCEODocumentNumber', '')
+      setValue('newCEOEmail', '')
+      setValue('newCEOPhone', '')
     }
-  }, [ceoSelection, clearErrors])
+  }, [ceoSelection, clearErrors, setValue])
 
   // Generar opciones dinámicas basadas en el número de socios
   const generateCEOOptions = () => {

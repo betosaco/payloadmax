@@ -121,7 +121,9 @@ export const FormBlock: React.FC<
 
   const [isLoading, setIsLoading] = useState(false)
   const [hasSubmitted, setHasSubmitted] = useState<boolean>()
-  const [error, setError] = useState<{ message: string; status?: string } | undefined>()
+  const [error, setError] = useState<
+    { message: string; status?: string; details?: any[] } | undefined
+  >()
   const [currentStep, setCurrentStep] = useState(0)
   const router = useRouter()
 
@@ -208,10 +210,52 @@ export const FormBlock: React.FC<
       const submitForm = async () => {
         setError(undefined)
 
-        const dataToSend = Object.entries(data).map(([name, value]) => ({
-          field: name,
-          value,
-        }))
+        const dataToSend = Object.entries(data).map(([name, value]) => {
+          // Sanitizar valores nulos o undefined
+          let sanitizedValue = value
+
+          // Si el valor es null o undefined, convertirlo a un valor seguro según el tipo de campo
+          if (sanitizedValue === null || sanitizedValue === undefined) {
+            // Campos monetarios o numéricos
+            if (
+              name.includes('MonetaryValue') ||
+              name.includes('MonetaryContribution') ||
+              name.includes('Value') ||
+              name.includes('Number')
+            ) {
+              sanitizedValue = '0'
+            }
+            // Campos de texto
+            else if (
+              name.includes('Description') ||
+              name.includes('Name') ||
+              name.includes('Text') ||
+              name.includes('Email') ||
+              name.includes('Phone') ||
+              name.includes('Document')
+            ) {
+              sanitizedValue = ''
+            }
+            // Campos de selección
+            else if (
+              name.includes('Currency') ||
+              name.includes('Type') ||
+              name.includes('Role') ||
+              name.includes('Selection')
+            ) {
+              sanitizedValue = name.includes('Currency') ? 'pen' : 'none'
+            }
+            // Cualquier otro campo
+            else {
+              sanitizedValue = ''
+            }
+          }
+
+          return {
+            field: name,
+            value: sanitizedValue,
+          }
+        })
 
         // delay loading indicator by 1s
         loadingTimerID = setTimeout(() => {
@@ -237,9 +281,26 @@ export const FormBlock: React.FC<
           if (req.status >= 400) {
             setIsLoading(false)
 
+            // Crear un mensaje de error más informativo
+            let errorMessage = 'Ha ocurrido un error al procesar su solicitud.'
+
+            // Extraer detalles de error si están disponibles
+            if (res.errors && res.errors.length > 0) {
+              errorMessage = res.errors[0].message || errorMessage
+
+              // Para errores específicos de validación, agregar más contexto
+              if (errorMessage.includes('fields are invalid')) {
+                const invalidFields = errorMessage.match(/Submission Data \d+ > Value/g) || []
+                if (invalidFields.length > 0) {
+                  errorMessage += ` Los siguientes campos tienen valores inválidos: ${invalidFields.join(', ')}`
+                }
+              }
+            }
+
             setError({
-              message: res.errors?.[0]?.message || 'Internal Server Error',
+              message: errorMessage,
               status: res.status,
+              details: res.errors || [],
             })
 
             return
@@ -313,11 +374,85 @@ export const FormBlock: React.FC<
       >
         <FormProvider {...formMethods}>
           {!isLoading && hasSubmitted && confirmationType === 'message' && (
-            <RichText data={confirmationMessage} />
+            <div className="p-6 text-green-700 bg-green-50 rounded-md border border-green-200">
+              <div className="flex items-center mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-7 w-7 mr-3"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <h3 className="text-lg font-medium">¡Solicitud enviada exitosamente!</h3>
+              </div>
+              <div className="confirmation-message">
+                <RichText data={confirmationMessage} />
+              </div>
+            </div>
           )}
-          {isLoading && !hasSubmitted && <p>Loading, please wait...</p>}
+          {isLoading && !hasSubmitted && (
+            <div className="p-4 text-blue-700 bg-blue-50 rounded-md flex items-center">
+              <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              <span>Procesando su solicitud, por favor espere...</span>
+            </div>
+          )}
           {error && (
-            <div className="p-4 text-red-600 bg-red-50 rounded mb-4">{`${error.status || '500'}: ${error.message || ''}`}</div>
+            <div className="p-6 text-red-600 bg-red-50 rounded-md mb-6 border border-red-200">
+              <h3 className="text-lg font-medium mb-2">Error al enviar el formulario</h3>
+              <p className="mb-2">
+                Se ha producido un error al procesar su solicitud. Por favor, revise los siguientes
+                detalles:
+              </p>
+
+              {error.message && error.message.includes('fields are invalid') ? (
+                <div>
+                  <p className="font-medium">Algunos campos contienen valores inválidos:</p>
+                  <ul className="list-disc pl-5 mt-2 text-sm">
+                    {error.message
+                      .match(/Submission Data \d+ > Value/g)
+                      ?.map((field, index) => (
+                        <li key={index}>
+                          Campo {field.replace('Submission Data ', '').replace(' > Value', '')}{' '}
+                          contiene un valor no válido
+                        </li>
+                      )) || <li>Hay campos con valores incorrectos o faltantes</li>}
+                  </ul>
+                  <p className="mt-3 text-sm">
+                    Por favor, revise que todos los campos requeridos estén completos y con valores
+                    válidos. Si el problema persiste, contacte a soporte técnico.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p className="font-medium">Detalles del error:</p>
+                  <p className="text-sm">{error.message || 'Error interno del servidor'}</p>
+                  {error.status && <p className="text-sm mt-1">Código: {error.status}</p>}
+                  <p className="mt-3 text-sm">
+                    Por favor, intente nuevamente. Si el problema persiste, contacte a soporte
+                    técnico.
+                  </p>
+                </div>
+              )}
+            </div>
           )}
           {!hasSubmitted && (
             <form id={formID} onSubmit={handleSubmit(onSubmit)}>

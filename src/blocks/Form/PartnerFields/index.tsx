@@ -31,10 +31,6 @@ export const PartnerFields: React.FC<{
   // Prefijo para los campos de este socio
   const prefix = `partner${partnerIndex}`
 
-  // Observar si este socio tiene algún rol ejecutivo
-  const executiveRole = watch(`${prefix}ExecutiveRole`) || ''
-  const hasExecutiveRole = executiveRole !== '' && executiveRole !== 'none'
-
   // Observar el número de socios
   const numberOfPartners = watch('numberOfPartners') || ''
   const numPartners = numberOfPartners ? parseInt(numberOfPartners, 10) : 0
@@ -77,11 +73,19 @@ export const PartnerFields: React.FC<{
       ])
 
       // Establecer valores por defecto para evitar nulos
+      setValue(`${prefix}FirstName`, '')
+      setValue(`${prefix}LastName`, '')
+      setValue(`${prefix}Nationality`, 'peruano') // Valor por defecto para nacionalidad
+      setValue(`${prefix}DocumentType`, 'dni') // Valor por defecto para tipo de documento
+      setValue(`${prefix}DocumentNumber`, '')
+      setValue(`${prefix}Email`, '')
+      setValue(`${prefix}Phone`, '')
       setValue(`${prefix}MonetaryContribution`, '0')
       setValue(`${prefix}Currency`, 'pen')
       setValue(`${prefix}NonMonetaryDescription`, '')
       setValue(`${prefix}NonMonetaryValue`, '0')
       setValue(`${prefix}NonMonetaryCurrency`, 'pen')
+      setValue(`${prefix}ExecutiveRole`, 'none')
     }
   }, [isRequired, prefix, clearErrors, setValue])
 
@@ -415,11 +419,23 @@ export const PartnersStep: React.FC = () => {
     for (let i = 1; i <= 5; i++) {
       // Si el socio no es visible/requerido, establecer sus campos a valores por defecto
       if (i > numPartners) {
-        setValue(`partner${i}MonetaryContribution`, '0') // String en lugar de null
-        setValue(`partner${i}Currency`, 'pen') // Valor por defecto en lugar de null
-        setValue(`partner${i}NonMonetaryDescription`, '') // String vacía en lugar de null
-        setValue(`partner${i}NonMonetaryValue`, '0') // String en lugar de null
-        setValue(`partner${i}NonMonetaryCurrency`, 'pen') // Valor por defecto en lugar de null
+        // Información básica
+        setValue(`partner${i}FirstName`, '')
+        setValue(`partner${i}LastName`, '')
+        setValue(`partner${i}Nationality`, 'peruano')
+        setValue(`partner${i}DocumentType`, 'dni')
+        setValue(`partner${i}DocumentNumber`, '')
+        setValue(`partner${i}Email`, '')
+        setValue(`partner${i}Phone`, '')
+
+        // Contribuciones
+        setValue(`partner${i}MonetaryContribution`, '0')
+        setValue(`partner${i}Currency`, 'pen')
+        setValue(`partner${i}NonMonetaryDescription`, '')
+        setValue(`partner${i}NonMonetaryValue`, '0')
+        setValue(`partner${i}NonMonetaryCurrency`, 'pen')
+
+        // Roles
         setValue(`partner${i}ExecutiveRole`, 'none')
       }
     }
