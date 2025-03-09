@@ -673,7 +673,7 @@ export const businessForm: RequiredDataFromCollectionSlug<'forms'> = {
     {
       name: 'ceoSelection',
       blockName: 'ceoSelection',
-      blockType: 'ceoSelection',
+      blockType: 'select',
       label: 'Selección de CEO',
       required: true,
       width: 100,
