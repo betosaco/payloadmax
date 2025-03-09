@@ -198,17 +198,19 @@ export const FormBlock: React.FC<
   }, [currentStep])
 
   return (
-    <div className="lg:max-w-[48rem]">
+    <div className="w-full max-w-4xl mx-auto px-4 my-12">
       {enableIntro && introContent && !hasSubmitted && (
         <RichText className="mb-8 lg:mb-12" data={introContent} enableGutter={false} />
       )}
-      <div className="p-4 lg:p-6 border border-border rounded-[0.8rem]">
+      <div className="p-4 lg:p-8 border border-border rounded-[0.8rem] bg-white shadow-sm">
         <FormProvider {...formMethods}>
           {!isLoading && hasSubmitted && confirmationType === 'message' && (
             <RichText data={confirmationMessage} />
           )}
           {isLoading && !hasSubmitted && <p>Loading, please wait...</p>}
-          {error && <div>{`${error.status || '500'}: ${error.message || ''}`}</div>}
+          {error && (
+            <div className="p-4 text-red-600 bg-red-50 rounded mb-4">{`${error.status || '500'}: ${error.message || ''}`}</div>
+          )}
           {!hasSubmitted && (
             <form id={formID} onSubmit={handleSubmit(onSubmit)}>
               {/* Display step title if using multi-step form */}
