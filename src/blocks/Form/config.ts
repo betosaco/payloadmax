@@ -41,6 +41,69 @@ export const FormBlock: Block = {
       label: 'Intro Content',
     },
     {
+      name: 'backgroundColor',
+      type: 'select',
+      label: 'Color de Fondo',
+      defaultValue: 'white',
+      options: [
+        {
+          label: 'Transparente',
+          value: 'transparent',
+        },
+        {
+          label: 'Blanco',
+          value: 'white',
+        },
+        {
+          label: 'Gris Claro',
+          value: 'gray-50',
+        },
+        {
+          label: 'Gris',
+          value: 'gray-100',
+        },
+        {
+          label: 'Crema',
+          value: 'cream',
+        },
+        {
+          label: 'Beige',
+          value: 'beige',
+        },
+        {
+          label: 'Azul Claro',
+          value: 'blue-50',
+        },
+        {
+          label: 'Azul',
+          value: 'blue-100',
+        },
+        {
+          label: 'Verde Claro',
+          value: 'green-50',
+        },
+        {
+          label: 'Verde',
+          value: 'green-100',
+        },
+        {
+          label: 'Rosa',
+          value: 'pink-50',
+        },
+        {
+          label: 'Lavanda',
+          value: 'purple-50',
+        },
+        {
+          label: 'Amarillo Claro',
+          value: 'yellow-50',
+        },
+      ],
+      admin: {
+        description: 'Selecciona el color de fondo para el formulario',
+      },
+    },
+    {
       name: 'multiStep',
       type: 'group',
       label: 'Multi-Step Form Configuration',

@@ -729,6 +729,26 @@ export interface FormBlock {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Selecciona el color de fondo para el formulario
+   */
+  backgroundColor?:
+    | (
+        | 'transparent'
+        | 'white'
+        | 'gray-50'
+        | 'gray-100'
+        | 'cream'
+        | 'beige'
+        | 'blue-50'
+        | 'blue-100'
+        | 'green-50'
+        | 'green-100'
+        | 'pink-50'
+        | 'purple-50'
+        | 'yellow-50'
+      )
+    | null;
   multiStep?: {
     enabled?: boolean | null;
     /**
@@ -1140,6 +1160,7 @@ export interface FormBlockSelect<T extends boolean = true> {
   form?: T;
   enableIntro?: T;
   introContent?: T;
+  backgroundColor?: T;
   multiStep?:
     | T
     | {

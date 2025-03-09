@@ -17,6 +17,20 @@ export type FormBlockType = {
   enableIntro: boolean
   form: FormType
   introContent?: SerializedEditorState
+  backgroundColor?:
+    | 'transparent'
+    | 'white'
+    | 'gray-50'
+    | 'gray-100'
+    | 'cream'
+    | 'beige'
+    | 'blue-50'
+    | 'blue-100'
+    | 'green-50'
+    | 'green-100'
+    | 'pink-50'
+    | 'purple-50'
+    | 'yellow-50'
   multiStep?: {
     enabled: boolean
     steps?: {
@@ -39,6 +53,7 @@ export const FormBlock: React.FC<
     form: { id: formID, confirmationMessage, confirmationType, redirect, submitButtonLabel } = {},
     introContent,
     multiStep,
+    backgroundColor = 'white',
   } = props
 
   const formMethods = useForm({
@@ -202,7 +217,37 @@ export const FormBlock: React.FC<
       {enableIntro && introContent && !hasSubmitted && (
         <RichText className="mb-8 lg:mb-12" data={introContent} enableGutter={false} />
       )}
-      <div className="p-4 lg:p-8 border border-border rounded-[0.8rem] bg-white shadow-sm">
+      <div
+        className={`p-4 lg:p-8 border border-border rounded-[0.8rem] shadow-sm ${
+          backgroundColor === 'transparent'
+            ? 'bg-transparent'
+            : backgroundColor === 'white'
+              ? 'bg-white'
+              : backgroundColor === 'gray-50'
+                ? 'bg-gray-50'
+                : backgroundColor === 'gray-100'
+                  ? 'bg-gray-100'
+                  : backgroundColor === 'cream'
+                    ? 'bg-amber-50'
+                    : backgroundColor === 'beige'
+                      ? 'bg-amber-100'
+                      : backgroundColor === 'blue-50'
+                        ? 'bg-blue-50'
+                        : backgroundColor === 'blue-100'
+                          ? 'bg-blue-100'
+                          : backgroundColor === 'green-50'
+                            ? 'bg-green-50'
+                            : backgroundColor === 'green-100'
+                              ? 'bg-green-100'
+                              : backgroundColor === 'pink-50'
+                                ? 'bg-pink-50'
+                                : backgroundColor === 'purple-50'
+                                  ? 'bg-purple-50'
+                                  : backgroundColor === 'yellow-50'
+                                    ? 'bg-yellow-50'
+                                    : 'bg-white'
+        }`}
+      >
         <FormProvider {...formMethods}>
           {!isLoading && hasSubmitted && confirmationType === 'message' && (
             <RichText data={confirmationMessage} />
