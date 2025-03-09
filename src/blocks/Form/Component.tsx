@@ -91,11 +91,7 @@ function isCEOStep(stepData: StepData | undefined): boolean {
   // Si no tiene la propiedad, verificar los campos
   if (!Array.isArray(stepData.fields)) return false
 
-  return stepData.fields.some(
-    (field) =>
-      field.fieldName === 'ceoSelection' ||
-      (field.fieldName && field.fieldName.startsWith('newCEO')),
-  )
+  return stepData.fields.some((field) => field.fieldName === 'ceoSelection')
 }
 
 export const FormBlock: React.FC<
@@ -200,7 +196,8 @@ export const FormBlock: React.FC<
   const currentStepFields = getFieldsForCurrentStep()
 
   const onSubmit = useCallback(
-    (data: FormFieldBlock[]) => {
+    // Usando any para evitar problemas de tipo con FormFieldBlock
+    (data: any) => {
       // If using multi-step form and not on the last step, go to next step
       if (isMultiStep && currentStep < totalSteps - 1) {
         setCurrentStep((prevStep) => prevStep + 1)
