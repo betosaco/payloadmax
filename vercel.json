@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "env": {
+    "BLOB_READ_WRITE_TOKEN": "your-blob-token-here",
+    "POSTGRES_URL": "postgresql://username:password@host/database?sslmode=require",
+    "NEXT_PUBLIC_SERVER_URL": "https://nuo-lat.vercel.app",
+    "PAYLOAD_SECRET": "your-payload-secret-here",
+    "VERCEL_PROJECT_PRODUCTION_URL": "nuo-lat.vercel.app",
+    "CRON_SECRET": "your-cron-secret-here",
+    "PREVIEW_SECRET": "your-preview-secret-here"
+  },
+  "buildCommand": "pnpm run ci"
+}
