@@ -59,6 +59,8 @@ create-user-payload.js
 # Database dumps
 *.sql
 *.bak
+# Exception for our specific database dump
+!neondb_dump.sql
 
 # Payload default media upload directory
 public/media/
