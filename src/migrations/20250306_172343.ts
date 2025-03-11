@@ -59,48 +59,19 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   // Continue with the rest of the migration (tables creation)
   // Use IF NOT EXISTS for all table creations
   await db.execute(sql`
-   CREATE TYPE "public"."enum_pages_hero_links_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum_pages_hero_links_link_appearance" AS ENUM('default', 'outline');
-  CREATE TYPE "public"."enum_pages_blocks_cta_links_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum_pages_blocks_cta_links_link_appearance" AS ENUM('default', 'outline');
-  CREATE TYPE "public"."enum_pages_blocks_content_columns_size" AS ENUM('oneThird', 'half', 'twoThirds', 'full');
-  CREATE TYPE "public"."enum_pages_blocks_content_columns_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum_pages_blocks_content_columns_link_appearance" AS ENUM('default', 'outline');
-  CREATE TYPE "public"."enum_pages_blocks_archive_populate_by" AS ENUM('collection', 'selection');
-  CREATE TYPE "public"."enum_pages_blocks_archive_relation_to" AS ENUM('posts');
-  CREATE TYPE "public"."enum_pages_hero_type" AS ENUM('none', 'highImpact', 'mediumImpact', 'lowImpact');
-  CREATE TYPE "public"."enum_pages_status" AS ENUM('draft', 'published');
-  CREATE TYPE "public"."enum__pages_v_version_hero_links_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum__pages_v_version_hero_links_link_appearance" AS ENUM('default', 'outline');
-  CREATE TYPE "public"."enum__pages_v_blocks_cta_links_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum__pages_v_blocks_cta_links_link_appearance" AS ENUM('default', 'outline');
-  CREATE TYPE "public"."enum__pages_v_blocks_content_columns_size" AS ENUM('oneThird', 'half', 'twoThirds', 'full');
-  CREATE TYPE "public"."enum__pages_v_blocks_content_columns_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum__pages_v_blocks_content_columns_link_appearance" AS ENUM('default', 'outline');
-  CREATE TYPE "public"."enum__pages_v_blocks_archive_populate_by" AS ENUM('collection', 'selection');
-  CREATE TYPE "public"."enum__pages_v_blocks_archive_relation_to" AS ENUM('posts');
-  CREATE TYPE "public"."enum__pages_v_version_hero_type" AS ENUM('none', 'highImpact', 'mediumImpact', 'lowImpact');
-  CREATE TYPE "public"."enum__pages_v_version_status" AS ENUM('draft', 'published');
-  CREATE TYPE "public"."enum_posts_status" AS ENUM('draft', 'published');
-  CREATE TYPE "public"."enum__posts_v_version_status" AS ENUM('draft', 'published');
-  CREATE TYPE "public"."enum_redirects_to_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum_forms_confirmation_type" AS ENUM('message', 'redirect');
-  CREATE TYPE "public"."enum_payload_jobs_log_task_slug" AS ENUM('inline', 'schedulePublish');
-  CREATE TYPE "public"."enum_payload_jobs_log_state" AS ENUM('failed', 'succeeded');
-  CREATE TYPE "public"."enum_payload_jobs_task_slug" AS ENUM('inline', 'schedulePublish');
-  CREATE TYPE "public"."enum_header_nav_items_link_type" AS ENUM('reference', 'custom');
-  CREATE TYPE "public"."enum_footer_nav_items_link_type" AS ENUM('reference', 'custom');
-  CREATE TABLE IF NOT EXISTS "pages_hero_links" (
-  	"_order" integer NOT NULL,
-  	"_parent_id" integer NOT NULL,
-  	"id" varchar PRIMARY KEY NOT NULL,
-  	"link_type" "enum_pages_hero_links_link_type" DEFAULT 'reference',
-  	"link_new_tab" boolean,
-  	"link_url" varchar,
-  	"link_label" varchar,
-  	"link_appearance" "enum_pages_hero_links_link_appearance" DEFAULT 'default'
-  );
+  -- Removed duplicate enum type creation
   
+  CREATE TABLE IF NOT EXISTS "public"."pages_hero_links" (
+    "id" SERIAL PRIMARY KEY,
+    "parent_id" INTEGER,
+    "order" INTEGER,
+    "link_type" "public"."enum_pages_hero_links_link_type",
+    "link_appearance" "public"."enum_pages_hero_links_link_appearance",
+    "link_label" TEXT,
+    "link_url" TEXT,
+    "doc" INTEGER
+  );
+
   CREATE TABLE IF NOT EXISTS "pages_blocks_cta_links" (
   	"_order" integer NOT NULL,
   	"_parent_id" varchar NOT NULL,
